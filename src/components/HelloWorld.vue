@@ -21,7 +21,7 @@
               </div>
             </div>
         </el-col>
-        <el-col :span="5">
+        <!-- <el-col :span="5">
             <el-select  placeholder="请选择" v-model="clustername" @change="selectCluster">
               <el-option
                 v-for="item in clusters"
@@ -30,10 +30,12 @@
                 :value="item.value">
               </el-option>
             </el-select>
-        </el-col>
+        </el-col> -->
       </el-row>
       <el-row :gutter="20" style="margin-top:50px">
+          <el-col :span="15">
             <div id="lineArea" :style="{width: '1000px', height: '500px'}"></div>
+          </el-col>
       </el-row>
   </div>
 </template>
@@ -67,7 +69,6 @@ export default {
   created () {
     this.currenttime()
     this.sorted()
-    this.drawEcharts()
   },
   // computed: {
   //   sortedItems: function () {
@@ -82,6 +83,7 @@ export default {
   //   }
   // },
   mounted () {
+    this.drawEcharts()
     // this.timer1 = setInterval(this.scroll, 2000)
   },
   methods: {
@@ -133,66 +135,66 @@ export default {
     drawEcharts () {
       let myChart = this.$echarts.init(document.getElementById('lineArea'))
       myChart.setOption({
-              title: {
-                  text: '折线图堆叠'
-              },
-              tooltip: {
-                  trigger: 'axis'
-              },
-              legend: {
-                  data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
-              },
-              grid: {
-                  left: '3%',
-                  right: '4%',
-                  bottom: '3%',
-                  containLabel: true
-              },
-              toolbox: {
-                  feature: {
-                      saveAsImage: {}
-                  }
-              },
-              xAxis: {
-                  type: 'category',
-                  boundaryGap: false,
-                  data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-              },
-              yAxis: {
-                  type: 'value'
-              },
-              series: [
-                  {
-                      name: '邮件营销',
-                      type: 'line',
-                      stack: '总量',
-                      data: [120, 132, 101, 134, 90, 230, 210]
-                  },
-                  {
-                      name: '联盟广告',
-                      type: 'line',
-                      stack: '总量',
-                      data: [220, 182, 191, 234, 290, 330, 310]
-                  },
-                  {
-                      name: '视频广告',
-                      type: 'line',
-                      stack: '总量',
-                      data: [150, 232, 201, 154, 190, 330, 410]
-                  },
-                  {
-                      name: '直接访问',
-                      type: 'line',
-                      stack: '总量',
-                      data: [320, 332, 301, 334, 390, 330, 320]
-                  },
-                  {
-                      name: '搜索引擎',
-                      type: 'line',
-                      stack: '总量',
-                      data: [820, 932, 901, 934, 1290, 1330, 1320]
-                  }
-              ]
+        title: {
+            text: '折线图堆叠'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        /* toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        }, */
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name: '邮件营销',
+                type: 'line',
+                stack: '总量',
+                data: [120, 132, 101, 134, 90, 230, 210]
+            },
+            {
+                name: '联盟广告',
+                type: 'line',
+                stack: '总量',
+                data: [220, 182, 191, 234, 290, 330, 310]
+            },
+            {
+                name: '视频广告',
+                type: 'line',
+                stack: '总量',
+                data: [150, 232, 201, 154, 190, 330, 410]
+            },
+            {
+                name: '直接访问',
+                type: 'line',
+                stack: '总量',
+                data: [320, 332, 301, 334, 390, 330, 320]
+            },
+            {
+                name: '搜索引擎',
+                type: 'line',
+                stack: '总量',
+                data: [820, 932, 901, 934, 1290, 1330, 1320]
+            }
+        ]
       })
     },
     sorted () {

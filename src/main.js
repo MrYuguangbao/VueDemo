@@ -4,8 +4,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import echarts from 'echarts'
+import ElementUI from 'element-ui'
 
 Vue.config.productionTip = false
+Vue.use(ElementUI)
 
 Vue.prototype.$echarts = echarts
 /* eslint-disable no-new */

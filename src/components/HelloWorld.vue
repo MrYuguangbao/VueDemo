@@ -1,12 +1,31 @@
 <template>
   <div>
       <el-row>
-          <el-col :span="7">
+          <el-col :span="6">
+              <el-form>
+                  <el-form-item>
+                    <el-date-picker
+                        v-model="ruleForm"
+                          type="daterange"
+                          range-separator="-"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          value-format="yyyy-MM-dd"
+                          format="yyyy-MM-dd"
+                          :picker-options="pickerOptions1">
+                    </el-date-picker>
+
+                  </el-form-item>
+
+              </el-form>
+          </el-col>
+          
+          <el-col :span="4">
             <p id=''>后推时间：{{beforeTime}}</p>
             <p id=''>当前时间：{{currentTime}}</p>
             <p id=''>前进时间：{{afterTime}}</p>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="6">
             <div id='box'>
               <div
                 id='con1'
@@ -32,11 +51,33 @@
             </el-select>
         </el-col> -->
       </el-row>
+      <el-row>
+        <el-col :span="9">
+            <el-form>
+                <el-form-item label="选择时间">
+                    <el-date-picker
+                      v-model="startDate"
+                      type="date"
+                      
+                      placeholder="起始日期"
+                      :picker-options="pickerOptionsStart" @change="changeEnd"></el-date-picker>
+                    --
+                    <el-date-picker
+                      v-model="endDate"
+                      type="date"
+                      
+                      placeholder="结束日期"
+                      :picker-options="pickerOptionsEnd" @change="changeStart"></el-date-picker>
+                </el-form-item>
+            </el-form>
+          </el-col>
+      </el-row>
       <el-row :gutter="20" style="margin-top:50px">
           <el-col :span="15">
             <div id="lineArea" :style="{width: '1000px', height: '500px'}"></div>
           </el-col>
       </el-row>
+      
   </div>
 </template>
 
@@ -44,6 +85,10 @@
 export default {
   data () {
     return {
+      pickerOptionsStart: {},
+      pickerOptionsEnd: {},
+      startDate: '',
+      endDate: '',
       beforeTime: '',
       currentTime: '',
       afterTime: '',
@@ -87,6 +132,36 @@ export default {
     // this.timer1 = setInterval(this.scroll, 2000)
   },
   methods: {
+    pickerOptions1: {
+      onPick: (obj) => {
+        this.pickerMinDate = new Date(obj.minDate).getTime()
+        console.log(obj)
+      },
+      disabledDate: (time) => {
+        if (this.pickerMinDate) {
+          const day1 =  2 * 24 * 3600 * 1000
+          let maxTime = this.pickerMinDate + day1
+          let minTime = this.pickerMinDate - day1
+          return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() > Date.now()-1 * 24 * 3600 * 1000
+        } else {
+          return time.getTime() > Date.now() - 1 * 24 * 3600 * 1000
+        }
+      }
+    },
+    changeStart () {
+      this.pickerOptionsStart = Object.assign({}, this.pickerOptionsStart, {
+        disabledDate: (time) => {
+          return time.getTime() < this.endDate - 5 * 24 * 60 * 60 * 1000
+        }
+      })
+    },
+    changeEnd () {
+      this.pickerOptionsEnd = Object.assign({}, this.pickerOptionsEnd, {
+        disabledDate: (time) => {
+          return time.getTime() - 5 * 24 * 60 * 60 * 1000 > this.startDate
+        }
+      })
+    },
     currenttime () {
       // setInterval(this.getTime, 1000)
       let yy = new Date().getFullYear()
@@ -136,19 +211,19 @@ export default {
       let myChart = this.$echarts.init(document.getElementById('lineArea'))
       myChart.setOption({
         title: {
-            text: '折线图堆叠'
+          text: '折线图堆叠'
         },
         tooltip: {
-            trigger: 'axis'
+          trigger: 'axis'
         },
         legend: {
-            data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+          data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
         },
         grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
         },
         /* toolbox: {
             feature: {
@@ -156,44 +231,44 @@ export default {
             }
         }, */
         xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          type: 'category',
+          boundaryGap: false,
+          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
         },
         yAxis: {
-            type: 'value'
+          type: 'value'
         },
         series: [
-            {
-                name: '邮件营销',
-                type: 'line',
-                stack: '总量',
-                data: [120, 132, 101, 134, 90, 230, 210]
-            },
-            {
-                name: '联盟广告',
-                type: 'line',
-                stack: '总量',
-                data: [220, 182, 191, 234, 290, 330, 310]
-            },
-            {
-                name: '视频广告',
-                type: 'line',
-                stack: '总量',
-                data: [150, 232, 201, 154, 190, 330, 410]
-            },
-            {
-                name: '直接访问',
-                type: 'line',
-                stack: '总量',
-                data: [320, 332, 301, 334, 390, 330, 320]
-            },
-            {
-                name: '搜索引擎',
-                type: 'line',
-                stack: '总量',
-                data: [820, 932, 901, 934, 1290, 1330, 1320]
-            }
+          {
+            name: '邮件营销',
+            type: 'line',
+            stack: '总量',
+            data: [120, 132, 101, 134, 90, 230, 210]
+          },
+          {
+            name: '联盟广告',
+            type: 'line',
+            stack: '总量',
+            data: [220, 182, 191, 234, 290, 330, 310]
+          },
+          {
+            name: '视频广告',
+            type: 'line',
+            stack: '总量',
+            data: [150, 232, 201, 154, 190, 330, 410]
+          },
+          {
+            name: '直接访问',
+            type: 'line',
+            stack: '总量',
+            data: [320, 332, 301, 334, 390, 330, 320]
+          },
+          {
+            name: '搜索引擎',
+            type: 'line',
+            stack: '总量',
+            data: [820, 932, 901, 934, 1290, 1330, 1320]
+          }
         ]
       })
     },
@@ -210,16 +285,16 @@ export default {
     scroll () {
       console.log('---------------------')
       // if (this.items.length > 13) {
-        let con1 = this.$refs.con1
-        con1.style.marginTop = '-30px'
-        this.animate = !this.animate
-        var that = this // 在异步函数中会出现this的偏移问题，此处一定要先保存好this的指向
-        setTimeout(function () {
-            that.sortedItems.push(that.sortedItems[0])
-            that.sortedItems.shift()
-            con1.style.marginTop = '0px'
-            that.animate = !that.animate // 这个地方如果不把animate 取反会出现消息回滚的现象，此时把ul 元素的过渡属性取消掉就可以完美实现无缝滚动的效果了
-        }, 1000)
+      let con1 = this.$refs.con1
+      con1.style.marginTop = '-30px'
+      this.animate = !this.animate
+      var that = this // 在异步函数中会出现this的偏移问题，此处一定要先保存好this的指向
+      setTimeout(function () {
+        that.sortedItems.push(that.sortedItems[0])
+        that.sortedItems.shift()
+        con1.style.marginTop = '0px'
+        that.animate = !that.animate // 这个地方如果不把animate 取反会出现消息回滚的现象，此时把ul 元素的过渡属性取消掉就可以完美实现无缝滚动的效果了
+      }, 1000)
       // }
     },
     mEnter () {

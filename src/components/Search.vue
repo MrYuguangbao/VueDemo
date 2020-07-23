@@ -1,6 +1,48 @@
 <template>
-  <el-card>
+  <div >
     <el-row>
+      <el-color-picker v-model="color1"></el-color-picker>
+    </el-row>
+    <el-row>
+      <el-radio-group v-model="labelPosition" size="small">
+        <el-radio-button label="left">左对齐</el-radio-button>
+        <el-radio-button label="right">右对齐</el-radio-button>
+        <el-radio-button label="top">顶部对齐</el-radio-button>
+      </el-radio-group>
+      <div style="margin: 20px;"></div>
+      <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign">
+        <el-form-item label="名称">
+          <el-input v-model="formLabelAlign.name"></el-input>
+        </el-form-item>
+        <el-form-item label="活动区域">
+          <el-input v-model="formLabelAlign.region"></el-input>
+        </el-form-item>
+        <el-form-item label="活动形式">
+          <el-input v-model="formLabelAlign.type"></el-input>
+        </el-form-item>
+      </el-form>
+    </el-row>
+    <el-row style="margin-top:10px">
+        <el-tooltip class="item" effect="light" content="重启" placement="bottom">
+          <el-button plain type="warning" style="font-size:24px" size="mini" icon="el-icon-refresh" @click.stop="restart(scope)"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="light" content="启动" placement="bottom">
+          <el-button plain type="success" style="font-size:24px" size="mini" icon="el-icon-video-play" @click.stop="start(scope)"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="light" content="停止" placement="bottom">
+          <el-button plain type="danger" style="font-size:24px" size="mini" icon="el-icon-video-pause" @click.stop="end(scope)"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="light" content="基础配置" placement="bottom">
+          <el-button plain type="primary" style="font-size:24px" size="mini" icon="el-icon-edit" @click.stop="basicConfig(scope)"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="light" content="分布式配置" placement="bottom">
+          <el-button plain type="info" style="font-size:24px" size="mini" icon="el-icon-edit-outline" @click.stop="distributedConfig(scope)"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="light" content="删除" placement="bottom">
+          <el-button plain type="warning"  style="font-size:24px" size="mini" icon="el-icon-delete" @click.stop="delCluster(scope)"></el-button>
+        </el-tooltip>
+    </el-row>
+    <el-row style="margin-top:10px">
       <el-col :span="6">
         <el-carousel height="200px" direction="vertical" :autoplay="true" interval="1000">
           <el-carousel-item v-for="item in 3" :key="item">
@@ -22,21 +64,72 @@
             </div>
           </div>
       </el-col> -->
-      <el-col :span="12">
-          <el-table :data="tableData" height="250" border style="width: 100%">
+      <el-col :span="9">
+          <el-table v-loading="loading" :data="tableData" height="250" border style="width: 100%">
+            <el-table-column prop="date" label="日期" width="180"></el-table-column>
+            <el-table-column prop="name" label="姓名" width="180"></el-table-column>
+            <el-table-column prop="address" label="地址"></el-table-column>
+          </el-table>
+      </el-col>
+      <el-col :span="9">
+          <el-table
+          v-loading="loading"
+          element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
+          :data="tableData" height="250" border style="width: 100%">
             <el-table-column prop="date" label="日期" width="180"></el-table-column>
             <el-table-column prop="name" label="姓名" width="180"></el-table-column>
             <el-table-column prop="address" label="地址"></el-table-column>
           </el-table>
       </el-col>
     </el-row>
-  </el-card>
+    <el-row>
+      <el-col :span="4">
+        <el-button
+          type="primary"
+          @click="openFullScreen1"
+          v-loading.fullscreen.lock="fullscreenLoading">
+          指令方式
+        </el-button>
+      </el-col>
+      <el-col :span="4">
+        <el-button
+          type="primary"
+          @click="openFullScreen2">
+          服务方式
+        </el-button>
+      </el-col>
+      <el-col :span="4">
+        <el-button
+          type="primary" icon="el-icon-search">
+          查询
+        </el-button>
+      </el-col>
+      <el-col :span="4">
+        <el-button type="primary" size="medium" icon="el-icon-search" @click="searchTable">搜索表格</el-button>
+      </el-col>
+      <el-col :span="4">
+        <el-button type="primary" :loading="loadingBtn" @click="search">{{loadingBtn?'搜索中':'搜索'}}</el-button>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 <script>
 export default {
   name: 'Search',
   data () {
     return {
+      color1: '#409EFF',
+      labelPosition: 'right',
+      formLabelAlign: {
+        name: '',
+        region: '',
+        type: ''
+      },
+      loadingBtn: false,
+      fullscreenLoading: false,
+      loading: false,
       items: [
         // 消息列表对应的数组
         { name: "马云" },
@@ -95,6 +188,35 @@ export default {
     this.timer1 = setInterval(this.scroll, 1000)
   },
   methods: {
+    searchTable () {
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+      }, 3000)
+    },
+    search () {
+      this.loadingBtn = true
+      setTimeout(() => {
+        this.loadingBtn = false
+      }, 2000)
+    },
+    openFullScreen1 () {
+      this.fullscreenLoading = true
+      setTimeout(() => {
+        this.fullscreenLoading = false
+      }, 2000)
+    },
+    openFullScreen2 () {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      setTimeout(() => {
+        loading.close()
+      }, 2000)
+    },
     scroll () {
       let con1 = this.$refs.con1
       con1.style.marginTop = '-30px'
